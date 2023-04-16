@@ -18,7 +18,7 @@ public:
     void setClientId(Client* client);
 
     
-    Client *getClientbyID(int);
+    Client* getClientbyID(int);
 };
 
 #endif

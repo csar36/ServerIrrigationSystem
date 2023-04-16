@@ -1,30 +1,62 @@
 #include "Server.h"
 
-Server::Server() {}
-
-Server::~Server() {}
-
-void Server::Init(sockaddr_in server_addr)
+Server::Server()
 {
-   socket.addr = server_addr;
+	// Get Instance of Logger Oject
+	log = Logger::GetInstance();
 }
 
-void Server::Bind()
+Server::~Server()
+{}
+
+void Server::Init()
 {
-   socket.CreateSocket();
-   if (bind(socket.sockfd, (struct sockaddr *) &socket.addr,
-         sizeof(socket.addr)) < 0)
-         error("ERROR on binding");
+	/*
+	 * Get Socket and set Port
+	 * Server Addr is fix.
+	 */
+   socket = new Socket();
+   socket.Create();
 }
+
+void Server::Start(int portNo)
+{
+	/*
+	 * Binded den Sockets im übergebenen Port
+	 * */
+	log->writeInfoEntry("Server::StartServer", "Socket created");
+	bzero((char *) &addr, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin_port = htons(portNo);
+
+    if (bind(socket.sockfd, (struct sockaddr *) &addr,sizeof(addr)) < 0)
+    	log->writeErrorEntry("Server::Start", "unable to bind socket");
+}
+
 
 void Server::ListenForClients(Client* p_client)
 {
-     listen(socket.sockfd, 5);
-     int clilen = sizeof(p_client->socket.addr);
-     p_client->socket.sockfd = accept(socket.sockfd,
-                 (struct sockaddr *) &p_client->socket.addr,
-                 &clilen);
-     manager.Clients.push_back(p_client);
+	 Client* p_newClient = new Client();
+	 p_newClient->socket.Create();
+     if(listen(socket.sockfd, 5)==0)
+     {
+    	 socklen_t clilen = sizeof(p_newClient->socket.addr);
+         p_client->socket.sockfd = accept(p_newClient->socket.sockfd,
+                     (struct sockaddr *) &p_newClient->socket.addr,
+                     &clilen);
+         Server::clientId++;
+         p_client->clientId = Server::clientId;
+         manager.Clients.push_back(p_client);
+         std::string logMsg= "Client was pushed to ClientManager with client Id ";
+         logMsg += std::to_string(Server::clientId);
+         log->writeErrorEntry("Server::ListenForClients", logMsg);
+     }
+     else
+     {
+    	 log->writeErrorEntry("Server::ListenForClients", "prepare to accept sockets on socket fd failed!");
+     }
+
 }
 
 void Server::error(std::string msg)

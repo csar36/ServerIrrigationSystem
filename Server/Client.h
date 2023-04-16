@@ -23,16 +23,13 @@ class Client
         ~Client();
         
         Socket socket;
-
-        
+        unsigned int clientId;
 
         std::string ReceiveMsgCharacterBased();
         void SendMsgCharacterProt(std::string msg);
 
         std::string ReceiveMsgProtocollBased();
         void SendMsgProtocollBased(std::string msg);
-
-
 };
 
 
