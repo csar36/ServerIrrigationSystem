@@ -9,7 +9,7 @@ class ClientService
 
 public:
     ClientService();
-    ClientService(constClientService&) = delete;
+    ClientService(const ClientService&) = delete;
     ~ClientService();
 
     void RegisterNewClient(Client* client);

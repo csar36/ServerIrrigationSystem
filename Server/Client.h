@@ -3,6 +3,8 @@
 #include "Socket.h"
 #include <netinet/in.h>
 #include <string>
+#include <iostream>
+#include <string>
 
 
 

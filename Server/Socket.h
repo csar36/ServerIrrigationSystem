@@ -11,13 +11,15 @@
 #include <iostream>
 #include <string.h>
 
-#include "Logger.h"
+#include "../Logging/Logger.h"
 
 class Socket
 {
     public:
         Socket();
+
         Socket(const Socket&) = delete;
+
         ~Socket();
 
         void Create();

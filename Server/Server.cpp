@@ -3,6 +3,7 @@
 Server::Server()
 {
 	// Get Instance of Logger Oject
+	clientId = 0;
 	log = Logger::GetInstance();
 }
 
@@ -15,7 +16,7 @@ void Server::Init()
 	 * Get Socket and set Port
 	 * Server Addr is fix.
 	 */
-   socket = new Socket();
+   socket = Socket();
    socket.Create();
 }
 
@@ -35,26 +36,35 @@ void Server::Start(int portNo)
 }
 
 
-void Server::ListenForClients(Client* p_client)
+void Server::ListenForClients()
 {
+
 	 Client* p_newClient = new Client();
 	 p_newClient->socket.Create();
      if(listen(socket.sockfd, 5)==0)
      {
     	 socklen_t clilen = sizeof(p_newClient->socket.addr);
-         p_client->socket.sockfd = accept(p_newClient->socket.sockfd,
+    	 p_newClient->socket.sockfd = accept(p_newClient->socket.sockfd,
                      (struct sockaddr *) &p_newClient->socket.addr,
                      &clilen);
-         Server::clientId++;
-         p_client->clientId = Server::clientId;
-         manager.Clients.push_back(p_client);
-         std::string logMsg= "Client was pushed to ClientManager with client Id ";
-         logMsg += std::to_string(Server::clientId);
-         log->writeErrorEntry("Server::ListenForClients", logMsg);
+    	 if(p_newClient->socket.sockfd < 0)
+    	 {
+    		 log->writeInfoEntry("Server::ListenForClients", "no client found.. retry!");
+    	 }
+    	 else
+    	 {
+             clientId++;
+             p_newClient->clientId = Server::clientId;
+             manager.Clients.push_back(p_newClient);
+             std::string logMsg= "Client was pushed to ClientManager with client Id ";
+             logMsg += std::to_string(Server::clientId);
+             log->writeInfoEntry("Server::ListenForClients", logMsg);
+    	 }
+
      }
      else
      {
-    	 log->writeErrorEntry("Server::ListenForClients", "prepare to accept sockets on socket fd failed!");
+    	 log->writeInfoEntry("Server::ListenForClients", "Failed - prepare to accept connections on socket FD!");
      }
 
 }

@@ -13,26 +13,27 @@
 
 #include "ClientManager.h"
 #include "Socket.h"
-#include "Logger.h"
+#include "../Logging/Logger.h"
 class Server
 {
 public:
     Server();
     Server(const Server &) = delete; // Keine Kopie erlauben
     ~Server();
-    static unsigned int clientId = 0;
+    unsigned int clientId;
     Logger* log;
     Socket socket;
     ClientManager manager;
 
     void Init();
     void Start(int portNo);
-    void ListenForClients(Client *p_client);
+    void ListenForClients();
     void Poll(Client *client);
 
     struct sockaddr_in addr;
 private:
     void error(std::string msg);
 };
+
 
 #endif

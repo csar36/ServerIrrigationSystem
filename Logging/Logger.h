@@ -1,4 +1,7 @@
 //@Singleton
+
+#ifndef __LOGGER_H__
+#define __LOGGER_H__
 #include <iostream>
 #include <mutex>
 #include <fstream>
@@ -14,6 +17,7 @@ class Logger
         {
         	std::string path = "";
             std::string filePath = path + "ServerLog.log";
+            std::cout << filePath << std::endl;
             LoggerFile.open(filePath, std::ios::app);
         }
 
@@ -31,4 +35,6 @@ class Logger
         void writeErrorEntry(std::string function_name, std::string message);
         std::ofstream LoggerFile;
 };
+
+#endif
 
